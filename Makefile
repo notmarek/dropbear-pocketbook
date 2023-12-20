@@ -106,13 +106,16 @@ $(CONFIG_SVR_STAMP):
 	touch dropbear_src/*.h
 	touch $@
 
-multi:
+multi: $(CONFIG_SVR_STAMP)
 	make -C dropbear_src PROGRAMS="dropbear dbclient scp" MULTI=1 
+	$(STRIP) dropbear_src/dropbearmulti
+	mkdir dist
+	cp dropbear_src/dropbearmulti dist/dropbearmulti
 
 clean:
-	-rm -f $(DB_SERVER_STAMP) $(DB_CLIENT_STAMP) $(CONFIG_CLI_STAMP) $(CONFIG_SVR_STAMP)
+	-rm -f $(DB_SERVER_STAMP) $(DB_CLIENT_STAMP) $(CONFIG_CLI_STAMP) $(CONFIG_SVR_STAMP) dist
 	-rm $(DROPBEAR)
 	-rm $(SCP)
 	-rm $(DBCLIENT)
-	make -C src distclean
+	make -C dropbear_src distclean
 
