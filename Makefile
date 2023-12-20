@@ -71,15 +71,22 @@ CONFIG_SVR_STAMP=.config_svr_stamp
 CONFIG_OPTIONS=--disable-syslog --disable-zlib --disable-pam --disable-shadow
 
 
-all:$(DB_SERVER_STAMP) $(DB_CLIENT_STAMP)
+all:patch $(DB_SERVER_STAMP) $(DB_CLIENT_STAMP)
 
 
-client:$(DB_CLIENT_STAMP)
+client:patch $(DB_CLIENT_STAMP)
 
-server:$(DB_SERVER_STAMP)
+server:patch $(DB_SERVER_STAMP)
 
 db_clean:
 	-make -C dropbear_src clean
+
+patch:
+	cd dropbear_src && patch -p1 < ../pb_dropbear_2022.83.patch
+
+unpatch:
+	cd dropbear_src && patch -p1 -R < ../pb_dropbear_2022.83.patch
+
 
 $(DB_SERVER_STAMP): $(CONFIG_SVR_STAMP) dropbear_src/$(DROPBEAR)
 	cp dropbear_src/$(DROPBEAR) .
@@ -87,7 +94,7 @@ $(DB_SERVER_STAMP): $(CONFIG_SVR_STAMP) dropbear_src/$(DROPBEAR)
 	$(STRIP) $(DROPBEAR)
 
 $(DB_CLIENT_STAMP): $(CONFIG_CLI_STAMP) dropbear_src/$(SCP) dropbear_src/$(DBCLIENT)
-	cp $ dropbear_src/$(SCP) dropbear_src/$(DBCLIENT) .
+	cp $ dropbear_src/$(SCP) dropbear_src/$(DBCLIENT) dist/
 	touch $@
 	$(STRIP) $(SCP)
 
@@ -106,13 +113,13 @@ $(CONFIG_SVR_STAMP):
 	touch dropbear_src/*.h
 	touch $@
 
-multi: $(CONFIG_SVR_STAMP)
+multi: patch $(CONFIG_SVR_STAMP)
 	make -C dropbear_src PROGRAMS="dropbear dbclient scp" MULTI=1 
 	$(STRIP) dropbear_src/dropbearmulti
 	mkdir dist
-	cp dropbear_src/dropbearmulti dist/dropbearmulti
+	cp dropbear_src/dropbearmulti dist/
 
-clean:
+clean: unpatch
 	-rm -f $(DB_SERVER_STAMP) $(DB_CLIENT_STAMP) $(CONFIG_CLI_STAMP) $(CONFIG_SVR_STAMP) dist
 	-rm $(DROPBEAR)
 	-rm $(SCP)
