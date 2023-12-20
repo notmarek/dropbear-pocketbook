@@ -1,0 +1,3 @@
+[submodule "dropbear_src"]
+	path = dropbear_src
+	url = git@github.com:mkj/dropbear.git
