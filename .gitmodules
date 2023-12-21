@@ -1,3 +1,6 @@
 [submodule "dropbear_src"]
 	path = dropbear_src
 	url = git@github.com:mkj/dropbear.git
+[submodule "openssh_src"]
+	path = openssh_src
+	url = git@github.com:openssh/openssh-portable.git
