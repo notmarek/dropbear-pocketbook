@@ -350,3 +350,16 @@ index 5d298cb..b698c77 100644
 
  	TRACE(("leave checkfileperm: success"))
  	return DROPBEAR_SUCCESS;
+diff --git a/default_options.h b/default_options.h
+index 5132775..3500e5f 100644
+--- a/default_options.h
++++ b/default_options.h
+@@ -311,7 +311,7 @@ group1 in Dropbear server too */
+  * Homedir is prepended if path begins with ~/
+  */
+ #define DROPBEAR_SFTPSERVER 1
+-#define SFTPSERVER_PATH "/usr/libexec/sftp-server"
++#define SFTPSERVER_PATH "/mnt/secure/bin/sftp-server"
+
+ /* This is used by the scp binary when used as a client binary. If you're
+  * not using the Dropbear client, you'll need to change it */

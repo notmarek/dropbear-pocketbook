@@ -42,8 +42,9 @@ DB_SERVER_STAMP=.db_server
 DB_CLIENT_STAMP=.db_client
 CONFIG_CLI_STAMP=.config_cli_stamp
 CONFIG_SVR_STAMP=.config_svr_stamp
-
+CONFIG_SFTP_STAMP=.config_sftp_stamp
 CONFIG_OPTIONS=--disable-syslog --disable-zlib --disable-pam --disable-shadow
+OPENSSH_CONFIG_OPTIONS=--without-zlib --without-openssl
 
 all:$(DB_SERVER_STAMP) $(DB_CLIENT_STAMP)
 
@@ -80,6 +81,12 @@ $(CONFIG_SVR_STAMP):
 	touch dropbear_src/*.h
 	touch $@
 
+$(CONFIG_SFTP_STAMP):
+	cd openssh_src && \
+	./configure --verbose LDFLAGS=$(LDFLAGS) $(OPENSSH_CONFIG_OPTIONS) --host=$(HOST)
+	touch $@
+
+
 dropbear_src/$(SCP) dropbear_src/$(DBCLIENT):
 	make -C dropbear_src PROGRAMS="dbclient scp"
 	
@@ -87,8 +94,13 @@ dropbear_src/$(SCP) dropbear_src/$(DBCLIENT):
 dropbear_src/$(DROPBEAR):
 	make -C dropbear_src PROGRAMS="dropbear"
 
-multi: $(DB_SERVER_STAMP)
+multi: $(DB_SERVER_STAMP) sftp-server
 	make -C dropbear_src PROGRAMS="dropbear dbclient scp" MULTI=1 
+	$(STRIP) dropbear_src/dropbearmulti
+	
+sftp-server: $(CONFIG_SFTP_STAMP)
+	make -C openssh_src sftp-server
+	$(STRIP) openssh_src/sftp-server
 
 clean:
 	-rm -f $(DB_SERVER_STAMP) $(DB_CLIENT_STAMP) $(CONFIG_CLI_STAMP) $(CONFIG_SVR_STAMP)
